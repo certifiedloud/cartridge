@@ -64,6 +64,7 @@ def default_payment_handler(request, order_form, order):
     cartridge.shop.checkout.CheckoutError("error message") if payment
     is unsuccessful.
     """
+    #create hosting account here
     pass
 
 
