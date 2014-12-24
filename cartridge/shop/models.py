@@ -157,6 +157,12 @@ class Product(Displayable, Priced, RichText, AdminThumbMixin):
             self.image = default.image.file.name
         self.save()
 
+class Plan(Displayable, Priced, RichText, AdminThumbMixin):
+    plan_id = models.CharField(max_length=50, blank=False, null=False)
+
+    class Meta:
+        verbose_name = "Plan"
+        verbose_name_plural = "Plans"
 
 class ProductImage(Orderable):
     """
