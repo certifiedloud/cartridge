@@ -157,7 +157,7 @@ class Product(Displayable, Priced, RichText, AdminThumbMixin):
             self.image = default.image.file.name
         self.save()
 
-class Plan(Displayable, Priced, RichText, AdminThumbMixin):
+class Plan(Product):
     plan_id = models.CharField(max_length=50, blank=False, null=False)
 
     class Meta:

@@ -349,7 +349,7 @@ class DiscountCodeAdmin(admin.ModelAdmin):
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Plan)
+admin.site.register(Plan, ProductAdmin)
 if settings.SHOP_USE_VARIATIONS:
     admin.site.register(ProductOption, ProductOptionAdmin)
 admin.site.register(Order, OrderAdmin)
