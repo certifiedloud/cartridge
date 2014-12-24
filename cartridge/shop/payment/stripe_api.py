@@ -40,6 +40,8 @@ def process(request, order_form, order):
             'country': request.POST['billing_detail_country'],
         },
     }
+    #first create the `Customer` in stripe, then add that customer to the `Plan`
+    #instead of creating the charge like below
     try:
         response = stripe.Charge.create(**data)
     except stripe.CardError:
@@ -47,3 +49,5 @@ def process(request, order_form, order):
     except Exception as e:
         raise CheckoutError(_("A general error occured: ") + str(e))
     return response.id
+
+    
