@@ -26,8 +26,9 @@ def process(request, order_form, order):
     Payment handler for the stripe API.
     """
     data = {
-        "amount": int((order.total * 100).to_integral()),
-        "currency": getattr(settings, "STRIPE_CURRENCY", "usd"),
+            #"amount": int((order.total * 100).to_integral()),
+            #"currency": getattr(settings, "STRIPE_CURRENCY", "usd"),
+        "email": request.POST["billing_detail_email"],
         "card": {
             'number': request.POST["card_number"].strip(),
             'exp_month': request.POST["card_expiry_month"].strip(),
@@ -41,13 +42,13 @@ def process(request, order_form, order):
         },
     }
     #first create the `Customer` in stripe, then add that customer to the `Plan`
-    #instead of creating the charge like below
     try:
-        response = stripe.Charge.create(**data)
+        customer = stripe.Customer.create(**data)
+        customer.subscriptions.create(plan="standard")
     except stripe.CardError:
         raise CheckoutError(_("Transaction declined"))
     except Exception as e:
         raise CheckoutError(_("A general error occured: ") + str(e))
-    return response.id
+    return customer.id
 
     
