@@ -25,26 +25,29 @@ def process(request, order_form, order):
     """
     Payment handler for the stripe API.
     """
-    data = {
-            #"amount": int((order.total * 100).to_integral()),
-            #"currency": getattr(settings, "STRIPE_CURRENCY", "usd"),
-        "email": request.POST["billing_detail_email"],
-        "card": {
-            'number': request.POST["card_number"].strip(),
-            'exp_month': request.POST["card_expiry_month"].strip(),
-            'exp_year': request.POST["card_expiry_year"][2:].strip(),
-            'cvc': request.POST["card_ccv"].strip(),
-            'address_line1': request.POST['billing_detail_street'],
-            'address_city': request.POST['billing_detail_city'],
-            'address_state': request.POST['billing_detail_state'],
-            'address_zip': request.POST['billing_detail_postcode'],
-            'country': request.POST['billing_detail_country'],
-        },
-    }
-    #first create the `Customer` in stripe, then add that customer to the `Plan`
+    card = {
+        "number": request.POST["card_number"].strip(),
+        "exp_month": request.POST["card_expiry_month"].strip(),
+        "exp_year": request.POST["card_expiry_year"][2:].strip(),
+        "cvc": request.POST["card_ccv"].strip(),
+        "address_line1": request.POST['billing_detail_street'],
+        "address_city": request.POST['billing_detail_city'],
+        "address_state": request.POST['billing_detail_state'],
+        "address_zip": request.POST['billing_detail_postcode'],
+        "country": request.POST['billing_detail_country'],
+        }
+
+    #first retrieve the `Customer` from stripe, then add that customer to the `Plan`
     try:
-        customer = stripe.Customer.create(**data)
+        #stripe customer already created on signup, retrieve it here
+        customer = stripe.Customer.retrieve(request.user.profile.stripe_id)
+        
+        #add card to customer
+        customer.card = card
+
+        #add subsription to customer
         customer.subscriptions.create(plan="standard")
+        customer.save()
     except stripe.CardError:
         raise CheckoutError(_("Transaction declined"))
     except Exception as e:
