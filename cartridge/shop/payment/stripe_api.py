@@ -44,10 +44,10 @@ def process(request, order_form, order):
         
         #add card to customer
         customer.card = card
+        customer.save()
 
         #add subsription to customer
         customer.subscriptions.create(plan="standard")
-        customer.save()
     except stripe.CardError:
         raise CheckoutError(_("Transaction declined"))
     except Exception as e:
